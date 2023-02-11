@@ -4,6 +4,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type Food struct {
+	Name string `json:"name"`
+	Price int `json:"price"`
+}
+
 func main() {
 	app := fiber.New();
 
@@ -29,5 +34,24 @@ func main() {
 		return c.SendString("Hi " + name + " " + surname); 
 	})
 
+	// Query Parser
+	app.Get("/food", func(c *fiber.Ctx) error {
+		food := Food{};
+		c.QueryParser(&food);
+		return c.JSON(food); 
+	})
+	
+	// WildCard
+	app.Get("/wild/*", func(c *fiber.Ctx) error {
+		wildcard := c.Params("*");
+		return c.SendString(wildcard); 
+	})
+
+	// Static File
+	app.Static("/web", "./ui", fiber.Static{
+		Index: "index.html",
+	})
+
 	app.Listen(":8009"); 
+
 }
